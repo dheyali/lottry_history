@@ -25,7 +25,7 @@ browser.find_element_by_xpath("//div[@class='tubiao_box_t']/table/tbody/tr/td[2]
 # 使用BeautifulSoup解析
 soup = bs4.BeautifulSoup(browser.page_source, features="html.parser")
 ssqs = soup.select(".t_tr1")
-browser.close()
+browser.quit()
 
 # 生成器表达式，每期结果组成一个元组，所有元祖组成一个列表
 dat = ((ssq.contents[1].contents[0],
