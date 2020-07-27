@@ -12,7 +12,7 @@ opts.add_argument("--ignore-certificate-errors")
 opts.add_argument('blink-settings=imagesEnabled=false')
 opts.add_argument("--headless")
 # 500彩票网
-url = "http://datachart.500.com/ssq/history/history.shtml"  # history url
+url = "http://datachart.500.com/dlt/history/history.shtml"  # history url
 browser = webdriver.Chrome(options=opts)
 browser.get(url)
 
@@ -24,26 +24,26 @@ browser.find_element_by_xpath("//div[@class='tubiao_box_t']/table/tbody/tr/td[2]
 
 # 使用BeautifulSoup解析
 soup = bs4.BeautifulSoup(browser.page_source, features="html.parser")
-ssqs = soup.select("#tdata > tr")
+dlts = soup.select("#tdata > tr")
 browser.quit()
 
 # 生成器表达式，每期结果组成一个元组，所有元祖组成一个列表
-dat = ((ssq.contents[1].contents[0],
-        ssq.contents[2].contents[0],
-        ssq.contents[3].contents[0],
-        ssq.contents[4].contents[0],
-        ssq.contents[5].contents[0],
-        ssq.contents[6].contents[0],
-        ssq.contents[7].contents[0],
-        ssq.contents[8].contents[0],
-        ssq.contents[10].contents[0].replace(",", ""),
-        ssq.contents[11].contents[0],
-        ssq.contents[12].contents[0].replace(",", ""),
-        ssq.contents[13].contents[0],
-        ssq.contents[14].contents[0].replace(",", ""),
-        ssq.contents[15].contents[0].replace(",", ""),
-        ssq.contents[16].contents[0].replace("-", "")
-        ) for ssq in ssqs)
+dat = ((dlt.contents[1].contents[0],
+        dlt.contents[2].contents[0],
+        dlt.contents[3].contents[0],
+        dlt.contents[4].contents[0],
+        dlt.contents[5].contents[0],
+        dlt.contents[6].contents[0],
+        dlt.contents[7].contents[0],
+        dlt.contents[8].contents[0],
+        dlt.contents[9].contents[0].replace(",", ""),
+        dlt.contents[10].contents[0],
+        dlt.contents[11].contents[0].replace(",", ""),
+        dlt.contents[12].contents[0],
+        dlt.contents[13].contents[0].replace(",", ""),
+        dlt.contents[14].contents[0].replace(",", ""),
+        dlt.contents[15].contents[0].replace("-", "")
+        ) for dlt in dlts)
 
 # 选择数据库文件
 file = easygui.filesavebox(msg="请指定数据文件保存位置",
@@ -54,19 +54,19 @@ file = easygui.filesavebox(msg="请指定数据文件保存位置",
                            ) or os.path.join(os.getcwd(), "lottry_history.db")
 print(time.strftime("%Y-%m-%d %H:%M:%S ", time.localtime(time.time())), "正在保存数据...")
 
-# 新建数据库表ssq_history，并写入数据
+# 新建数据库表dlt_history，并写入数据
 with sqlite3.connect(file) as con:
     cur = con.cursor()
-    cur.execute("DROP TABLE IF EXISTS 'ssq_history'")
-    cur.execute('CREATE TABLE "ssq_history" ('
+    cur.execute("DROP TABLE IF EXISTS 'dlt_history'")
+    cur.execute('CREATE TABLE "dlt_history" ('
                 '"qi" TEXT NOT NULL,'           # 期号
-                '"r1" integer NOT NULL,'        # 红球—1
-                '"r2" integer NOT NULL,'        # 红球-2
-                '"r3" integer NOT NULL,'        # 红球-3
-                '"r4" integer NOT NULL,'        # 红球-4
-                '"r5" integer NOT NULL,'        # 红球-5
-                '"r6" integer NOT NULL,'        # 红球-6
-                '"blue" integer NOT NULL,'      # 蓝球
+                '"q1" integer NOT NULL,'        # 前区—1
+                '"q2" integer NOT NULL,'        # 前区-2
+                '"q3" integer NOT NULL,'        # 前区-3
+                '"q4" integer NOT NULL,'        # 前区-4
+                '"q5" integer NOT NULL,'        # 前区-5
+                '"h1" integer NOT NULL,'        # 后区-1
+                '"h2" integer NOT NULL,'        # 后区-2
                 '"all_bonus" text NOT NULL,'    # 总奖池
                 '"fst_num" integer NOT NULL,'   # 一等奖注数
                 '"fst_bonus" text NOT NULL,'    # 一等奖奖金
@@ -76,7 +76,7 @@ with sqlite3.connect(file) as con:
                 '"date" text NOT NULL,'         # 开奖日期
                 'PRIMARY KEY ("qi"))'
                 )
-    cur.executemany('REPLACE INTO ssq_history VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', dat)
+    cur.executemany('REPLACE INTO dlt_history VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', dat)
     con.commit()
 
 print(time.strftime("%Y-%m-%d %H:%M:%S ", time.localtime(time.time())), "已完成，数据保存在：", file)
